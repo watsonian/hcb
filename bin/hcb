@@ -25,6 +25,10 @@ if [ "$valid_app" != "1" ]; then
       ${BIN_DIR}/hcb-binary-current
       exit
       ;;
+    update)
+      ${BIN_DIR}/hcb-update
+      exit
+      ;;
     *)
       echo "Please specify a valid app name: ${VALID_APPS}"
       exit 1
