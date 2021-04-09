@@ -13,7 +13,7 @@ create all subdirectories that are required. You'll then want to add the followi
 PATH:
 
 ```
-$HOME/.hashicorp/hcb
+$HOME/.hashicorp/hcb/bin
 ```
 
 ## Usage
