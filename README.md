@@ -52,3 +52,12 @@ The following HashiCorp applications are supported:
 * Terraform
 * Nomad
 * Vault
+
+## Updating
+
+You can update `hcb` by either switching to `$HOME/.hashicorp/hcb` and running `git pull` or by running
+this command from anywhere:
+
+```
+hcb update
+```
