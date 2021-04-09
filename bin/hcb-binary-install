@@ -1,0 +1,55 @@
+#!/bin/bash
+
+ROOT_DIR="$HOME/.hashicorp/hcb"
+BIN_DIR="$ROOT_DIR/bin"
+BINARY_DIR="$ROOT_DIR/binaries"
+
+ARCH=$(uname -m | tr '[:upper:]' '[:lower:]')
+OS=$(uname -s | tr '[:upper:]' '[:lower:]')
+case $ARCH in
+  x86_64)
+    ARCH="amd64"
+    ;;
+  i386)
+    ARCH="386"
+    ;;
+esac
+
+VALID_APPS="consul nomad terraform vault"
+
+APP=$1
+VERSION=$2
+
+valid_app=0
+for a in $VALID_APPS; do
+  if [ "$a" = "$APP" ]; then
+    valid_app=1
+    break
+  fi
+done
+
+if [ "$valid_app" != "1" ]; then
+  echo "Please specify a valid app name: ${VALID_APPS}"
+  exit 1
+fi
+
+version=$VERSION
+version_w_prefix="${APP}_${VERSION}"
+
+if [ -f "${BINARY_DIR}/${APP}/${version}" ]; then
+  # echo "${version} already fetched. Skipping..."
+  echo -n ""
+else
+  filename="${version_w_prefix}_${OS}_${ARCH}.zip"
+  echo "Fetching ${version}..."
+  echo "--------------------------------------------------------------------------------"
+  curl https://releases.hashicorp.com/${APP}/${version}/${filename} -C - -o /tmp/${filename} &&
+    echo "--------------------------------------------------------------------------------" &&
+    unzip -o -d ${BINARY_DIR}/${APP} /tmp/${filename} &&
+    mv ${BINARY_DIR}/${APP}/${APP} ${BINARY_DIR}/${APP}/${version} &&
+    rm /tmp/${filename} &&
+    chmod +x ${BINARY_DIR}/${APP}/${version} &&
+    group=$(groups $USER | cut -d" " -f1) &&
+    chown $USER:$group ${BINARY_DIR}/${APP}/${version}
+  echo "================================================================================"
+fi

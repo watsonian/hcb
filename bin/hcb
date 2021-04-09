@@ -1,0 +1,54 @@
+#!/bin/bash
+
+ROOT_DIR="$HOME/.hashicorp/hcb"
+BIN_DIR="$ROOT_DIR/bin"
+BINARY_DIR="$ROOT_DIR/binaries"
+
+VALID_APPS="consul nomad terraform vault"
+
+${BIN_DIR}/hcb-bootstrap
+
+APP=$1
+COMMAND=$2
+
+valid_app=0
+for a in $VALID_APPS; do
+  if [ "$a" = "$APP" ]; then
+    valid_app=1
+    break
+  fi
+done
+
+if [ "$valid_app" != "1" ]; then
+  case $APP in
+    current)
+      ${BIN_DIR}/hcb-binary-current
+      exit
+      ;;
+    *)
+      echo "Please specify a valid app name: ${VALID_APPS}"
+      exit 1
+    ;;
+  esac
+fi
+
+version_regex="[0-9]+\.[0-9]+\.[0-9]+"
+if [[ "$COMMAND" =~ $version_regex ]]; then
+  version=$COMMAND
+  ${BIN_DIR}/hcb-binary-link ${APP} ${version}
+else
+  case $COMMAND in
+    list-remote)
+      curl -s https://releases.hashicorp.com/${APP}/ | grep -Eo "${APP}_[0-9]+[^<]+" | cut -d"_" -f2 | sort -V
+      ;;
+    list)
+      ${BIN_DIR}/hcb-binary-list ${APP}
+      ;;
+    "")
+      cat ${ROOT_DIR}/.${APP}.current
+      ;;
+    *)
+      echo "fallback"
+      ;;
+  esac
+fi

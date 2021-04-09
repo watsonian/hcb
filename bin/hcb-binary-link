@@ -1,0 +1,32 @@
+#!/bin/bash
+
+ROOT_DIR="$HOME/.hashicorp/hcb"
+BIN_DIR="$ROOT_DIR/bin"
+BINARY_DIR="$ROOT_DIR/binaries"
+
+VALID_APPS="consul nomad terraform vault"
+
+APP=$1
+VERSION=$2
+
+valid_app=0
+for a in $VALID_APPS; do
+  if [ "$a" = "$APP" ]; then
+    valid_app=1
+    break
+  fi
+done
+
+if [ "$valid_app" != "1" ]; then
+  echo "Please specify a valid app name: ${VALID_APPS}"
+  exit 1
+fi
+
+if [ -f "${BINARY_DIR}/${APP}/${VERSION}" ]; then
+  ln -s -f ${BINARY_DIR}/${APP}/${VERSION} ${BIN_DIR}/${APP}
+else
+  ${BIN_DIR}/hcb-binary-install ${APP} ${VERSION}
+  ln -s -f ${BINARY_DIR}/${APP}/${VERSION} ${BIN_DIR}/${APP}
+fi
+
+echo $VERSION > ${ROOT_DIR}/.${APP}.current

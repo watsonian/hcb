@@ -1,0 +1,7 @@
+.bootstrapped
+.*.current
+bin/consul
+bin/nomad
+bin/terraform
+bin/vault
+binaries/

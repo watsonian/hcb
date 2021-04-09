@@ -1,0 +1,54 @@
+#!/bin/bash
+
+ROOT_DIR="$HOME/.hashicorp/hcb"
+BIN_DIR="$ROOT_DIR/bin"
+BINARY_DIR="$ROOT_DIR/binaries"
+
+VALID_APPS="consul nomad terraform vault"
+
+BOOTSTRAP_BREADCRUMB="${ROOT_DIR}/.bootstrapped"
+
+# Only perform the bootstrapping if the breadcrumb file doesn't exist.
+if [ ! -f $BOOTSTRAP_BREADCRUMB ]; then
+
+  # Clone the repository if it doesn't already exist. This would
+  # only occur when this script is executed for initial installation.
+  if [ ! -d ${ROOT_DIR}/.git ]; then
+    which git > /dev/null 2>&1
+    if [ "$?" = "1" ]; then
+      echo "git is required for installation. Please install it and try again."
+      exit 1
+    fi
+
+    mkdir -p $HOME/.hashicorp
+    git clone https://github.com/watsonian/hcb.git $HOME/.hashicorp/hcb
+  fi
+
+  # Create the subdirectories we need
+  mkdir -p ${BIN_DIR} ${BINARY_DIR}
+
+  for app in $VALID_APPS; do
+    mkdir -p ${BINARY_DIR}/${app}
+  done
+
+  # Drop the breadcrumb file indicating the bootstrap has already occurred.
+  date > $BOOTSTRAP_BREADCRUMB
+
+  echo
+  echo "================================================================================"
+  echo
+  echo "Bootstrap Complete!"
+  echo
+  echo "--------------------------------------------------------------------------------"
+  echo
+  echo "All HashiCorp Binaries (hcb) files are stored in this directory:"
+  echo
+  echo "  ${ROOT_DIR}"
+  echo
+  echo "Make sure you add the following to your PATH:"
+  echo
+  echo "  ${BIN_DIR}"
+  echo
+  echo "================================================================================"
+  echo
+fi

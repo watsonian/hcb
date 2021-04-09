@@ -1,0 +1,16 @@
+#!/bin/bash
+
+ROOT_DIR="$HOME/.hashicorp/hcb"
+BIN_DIR="$ROOT_DIR/bin"
+BINARY_DIR="$ROOT_DIR/binaries"
+
+VALID_APPS="consul nomad terraform vault"
+
+for app in $VALID_APPS; do
+  current_file="${ROOT_DIR}/.${app}.current"
+  if [ -f $current_file ]; then
+    printf "%+9s: %s\n" $app $(cat $current_file)
+  else
+    printf "%+9s: not installed\n" $app
+  fi
+done
