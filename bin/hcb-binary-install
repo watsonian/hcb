@@ -49,7 +49,6 @@ else
     mv ${BINARY_DIR}/${APP}/${APP} ${BINARY_DIR}/${APP}/${version} &&
     rm /tmp/${filename} &&
     chmod +x ${BINARY_DIR}/${APP}/${version} &&
-    group=$(groups $USER | cut -d" " -f1) &&
-    chown $USER:$group ${BINARY_DIR}/${APP}/${version}
+    chown $USER: ${BINARY_DIR}/${APP}/${version}
   echo "================================================================================"
 fi
