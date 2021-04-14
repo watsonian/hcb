@@ -43,7 +43,7 @@ if [[ "$COMMAND" =~ $version_regex ]]; then
 else
   case $COMMAND in
     list-remote)
-      curl -s https://releases.hashicorp.com/${APP}/ | grep -Eo "${APP}_[0-9]+[^<]+" | cut -d"_" -f2 | sort -V
+      ${BIN_DIR}/hcb-binary-list ${APP} remote
       ;;
     list)
       ${BIN_DIR}/hcb-binary-list ${APP}

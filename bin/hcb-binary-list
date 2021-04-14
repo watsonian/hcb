@@ -7,6 +7,7 @@ BINARY_DIR="$ROOT_DIR/binaries"
 VALID_APPS="consul nomad terraform vault"
 
 APP=$1
+LOCATION=${2:-local} # can be either 'local' or 'remote'
 
 valid_app=0
 for a in $VALID_APPS; do
@@ -26,10 +27,27 @@ if [ -f ${ROOT_DIR}/.${APP}.current ]; then
   current_version=$(cat ${ROOT_DIR}/.${APP}.current)
 fi
 
-for version in $(ls -1b ${BINARY_DIR}/${APP}); do
-  if [ "$version" = "$current_version" ]; then
-    echo "* ${version}"
-  else
-    echo "  ${version}"
-  fi
-done
+
+if [ "$LOCATION" = "local" ]; then
+  for version in $(ls -1b ${BINARY_DIR}/${APP} | sort -V); do
+    if [ "$version" = "$current_version" ]; then
+      echo "* ${version}"
+    else
+      echo "  ${version}"
+    fi
+  done
+else
+  installed_versions=$(ls ${BINARY_DIR}/${APP})
+
+  for version in $(curl -s https://releases.hashicorp.com/${APP}/ | grep -Eo "${APP}_[0-9]+[^<]+" | cut -d"_" -f2 | sort -V); do
+    if [[ $installed_versions = *$version* ]]; then
+      if [ "$version" = "$current_version" ]; then
+        echo "* ${version}"
+      else
+        echo "i ${version}"
+      fi
+    else
+      echo "  ${version}"
+    fi
+  done
+fi
