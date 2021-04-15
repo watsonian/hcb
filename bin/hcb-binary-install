@@ -40,15 +40,21 @@ if [ -f "${BINARY_DIR}/${APP}/${version}" ]; then
   # echo "${version} already fetched. Skipping..."
   echo -n ""
 else
-  filename="${version_w_prefix}_${OS}_${ARCH}.zip"
-  echo "Fetching ${version}..."
-  echo "--------------------------------------------------------------------------------"
-  curl https://releases.hashicorp.com/${APP}/${version}/${filename} -C - -o /tmp/${filename} &&
-    echo "--------------------------------------------------------------------------------" &&
-    unzip -o -d ${BINARY_DIR}/${APP} /tmp/${filename} &&
-    mv ${BINARY_DIR}/${APP}/${APP} ${BINARY_DIR}/${APP}/${version} &&
-    rm /tmp/${filename} &&
-    chmod +x ${BINARY_DIR}/${APP}/${version} &&
-    chown $USER: ${BINARY_DIR}/${APP}/${version}
-  echo "================================================================================"
+  available_versions=$(curl -s https://releases.hashicorp.com/${APP}/ | grep -Eo "${APP}_[0-9]+[^<]+" | cut -d"_" -f2 | sort -V)
+  if [[ $available_versions = *$version* ]]; then
+    filename="${version_w_prefix}_${OS}_${ARCH}.zip"
+    echo "Fetching ${version}..."
+    echo "--------------------------------------------------------------------------------"
+    curl https://releases.hashicorp.com/${APP}/${version}/${filename} -C - -o /tmp/${filename} &&
+      echo "--------------------------------------------------------------------------------" &&
+      unzip -o -d ${BINARY_DIR}/${APP} /tmp/${filename} &&
+      mv ${BINARY_DIR}/${APP}/${APP} ${BINARY_DIR}/${APP}/${version} &&
+      rm /tmp/${filename} &&
+      chmod +x ${BINARY_DIR}/${APP}/${version} &&
+      chown $USER: ${BINARY_DIR}/${APP}/${version}
+    echo "================================================================================"
+  else
+    echo "${version} doesn't exist"
+    exit 1
+  fi
 fi

@@ -26,7 +26,11 @@ if [ -f "${BINARY_DIR}/${APP}/${VERSION}" ]; then
   ln -s -f ${BINARY_DIR}/${APP}/${VERSION} ${BIN_DIR}/${APP}
 else
   ${BIN_DIR}/hcb-binary-install ${APP} ${VERSION}
-  ln -s -f ${BINARY_DIR}/${APP}/${VERSION} ${BIN_DIR}/${APP}
+  if [ "$?" = "0" ]; then
+    ln -s -f ${BINARY_DIR}/${APP}/${VERSION} ${BIN_DIR}/${APP}
+  else
+    exit 1
+  fi
 fi
 
 echo $VERSION > ${ROOT_DIR}/.${APP}.current
