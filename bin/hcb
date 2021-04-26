@@ -10,6 +10,7 @@ ${BIN_DIR}/hcb-bootstrap
 
 APP=$1
 COMMAND=$2
+VERSION=$3
 
 valid_app=0
 for a in $VALID_APPS; do
@@ -47,6 +48,9 @@ else
       ;;
     list)
       ${BIN_DIR}/hcb-binary-list ${APP}
+      ;;
+    remove)
+      ${BIN_DIR}/hcb-binary-remove ${APP} ${VERSION}
       ;;
     "")
       cat ${ROOT_DIR}/.${APP}.current

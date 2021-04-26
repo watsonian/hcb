@@ -1,0 +1,41 @@
+#!/bin/bash
+
+ROOT_DIR="$HOME/.hashicorp/hcb"
+BIN_DIR="$ROOT_DIR/bin"
+BINARY_DIR="$ROOT_DIR/binaries"
+
+VALID_APPS="consul nomad terraform vault"
+
+APP=$1
+REMOVE_VERSION=$2
+
+valid_app=0
+for a in $VALID_APPS; do
+  if [ "$a" = "$APP" ]; then
+    valid_app=1
+    break
+  fi
+done
+
+if [ "$valid_app" != "1" ]; then
+  echo "Please specify a valid app name: ${VALID_APPS}"
+  exit 1
+fi
+
+version=$REMOVE_VERSION
+version_w_prefix="${APP}_${REMOVE_VERSION}"
+
+available_versions=$(ls -1b ${BINARY_DIR}/${APP} | sort -V)
+if [[ $available_versions = *$version* ]]; then
+  current_file="${ROOT_DIR}/.${APP}.current"
+  current_version=$(cat $current_file)
+  if [ "$current_version" = "$version" ]; then
+    echo "ERROR: You cannot remove the version you're currently using."
+    exit 1
+  fi
+
+  rm ${BINARY_DIR}/${APP}/${version}
+else
+  echo "ERROR: ${version} not installed, so can't remove it."
+  exit 1
+fi
