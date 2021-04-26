@@ -1,0 +1,42 @@
+#!/bin/bash
+
+ROOT_DIR="$HOME/.hashicorp/hcb"
+BIN_DIR="$ROOT_DIR/bin"
+BINARY_DIR="$ROOT_DIR/binaries"
+
+USAGE=$(cat <<EOF
+Usage: hcb <application|top-level command> [application command] [<args>]
+
+Available applications:
+  consul
+  nomad
+  terraform
+  vault
+
+Available top-level commands:
+  current           lists all currently active binary versions
+  update            updates hcb to the latest version
+
+Available application commands:
+  <version>         install and/or set the specified version as the current version
+  list              lists all installed versions of an application
+  list-remote       lists all versions of an application available for download
+  remove <version>  remove the specified version of an application
+
+Examples:
+
+Install and/or set version 1.9.5+ent of Consul as the active version
+
+  hcb consul 1.9.5+ent
+
+Remove version 1.7.0-rc2 of Vault
+
+  hcb vault remove 1.7.0-rc2
+
+List all currently active versions of supported applications
+
+  hcb current
+EOF
+)
+
+echo "$USAGE"

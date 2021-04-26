@@ -12,6 +12,11 @@ APP=$1
 COMMAND=$2
 VERSION=$3
 
+if [ -z "${1}${2}${3}" ]; then
+  ${BIN_DIR}/hcb-usage
+  exit 1
+fi
+
 valid_app=0
 for a in $VALID_APPS; do
   if [ "$a" = "$APP" ]; then
@@ -50,13 +55,19 @@ else
       ${BIN_DIR}/hcb-binary-list ${APP}
       ;;
     remove)
+      if [ -z "${VERSION}" ]; then
+        echo "ERROR: Please specify a version to remove."
+        exit 1
+      fi
+
       ${BIN_DIR}/hcb-binary-remove ${APP} ${VERSION}
       ;;
     "")
       cat ${ROOT_DIR}/.${APP}.current
       ;;
     *)
-      echo "fallback"
+      ${BIN_DIR}/hcb-usage
+      exit 1
       ;;
   esac
 fi
